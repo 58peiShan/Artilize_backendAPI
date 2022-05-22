@@ -4,8 +4,10 @@ const db = require('../../modules/mysql_config');
 
 router.route('/')
   .get(async (req, res, next) => {
-    const sql = "SELECT * FROM blog_article";
+    const sql = "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id  ";
+    //const sql = "SELECT * FROM blog_article";
     const [datas] = await db.query(sql);
+    //console.log(datas);
     res.json(datas);
   })
 
@@ -65,9 +67,9 @@ router.route('/Btn').get(async (req, res, next) => {
 router.route('/:id')
   .get(async (req, res, next) => {
     const id = req.params.id;
-    const sql = "SELECT * FROM blog_article WHERE fr_article_id=?";
+    const sql = "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id=?";
     const datas = await db.query(sql, [id]);
-    console.log(datas[0][0]);
+    console.log(datas);
     res.json(datas[0][0]);
   })
 
