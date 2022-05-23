@@ -17,6 +17,8 @@ const bookingRouter = require('./routes/Booking/booking');
 const ForumRouter = require('./routes/Forum/Forum');
 const productRouter = require('./routes/Product/product');
 const B2BRouter = require('./routes/B2B/B2B');
+const uploadIMGRouter = require('./routes/Forum/TinyMCEuploadImg');
+
 
 
 const app = express();
@@ -47,6 +49,9 @@ app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/forum', ForumRouter);
 app.use('/B2B', B2BRouter);
+
+//TinyMCE圖片上傳API
+app.use('/uploadIMG', uploadIMGRouter);
 
 
 
