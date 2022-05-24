@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev":"node app"
+    "dev": "node app"
   },
   "dependencies": {
+    "algoliasearch": "^4.13.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
