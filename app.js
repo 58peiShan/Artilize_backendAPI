@@ -17,6 +17,7 @@ const bookingRouter = require('./routes/Booking/booking');
 const ForumRouter = require('./routes/Forum/Forum');
 const productRouter = require('./routes/Product/product');
 const B2BRouter = require('./routes/B2B/B2B');
+const MapSearch = require('./routes/Exhibition/MapSearch')
 
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/products', productsRouter);
 
 // 專題路由設定
 app.use('/users', usersRouter);
+app.use('/MapSearch', MapSearch)
 app.use('/exhibition', exhibitionRouter);
 app.use('/booking', bookingRouter);
 app.use('/users', usersRouter);
