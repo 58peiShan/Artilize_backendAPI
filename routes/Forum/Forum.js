@@ -16,7 +16,7 @@ router.route("/")
       //console.log(req.query);
       const topic = decodeURI(`${req.query.topic}`);
       const sql =
-        "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn HAVING thema = ?";
+        "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn HAVING thema = ? ORDER BY `blog_article`.`created_time` DESC";
       const [datas] = await db.query(sql, [topic]);
       res.json(datas);
     }
@@ -52,12 +52,14 @@ router.route("/addarticle").post(async (req, res, next) => {
 
 //個別文章
 router.route("/:id").get(async (req, res, next) => {
-  const id = req.params.id;
-  const sql =
-    "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id=?";
+  const id = (Number(req.params.id) + 1);
+  const sql = "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN `users` ON blog_article.users_id = users.id WHERE article_id <= ? ORDER BY article_id DESC LIMIT 3;"
+  // const sql =
+  //   "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id=?";
   const datas = await db.query(sql, [id]);
-  console.log("datas");
-  res.json(datas[0][0]);
+  console.log(datas);
+  console.log(id);
+  res.json(datas[0]);
 });
 
 
