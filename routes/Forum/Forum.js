@@ -16,7 +16,7 @@ router.route("/")
       //console.log(req.query);
       const topic = decodeURI(`${req.query.topic}`);
       const sql =
-        "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn HAVING thema = ? ORDER BY `blog_article`.`created_time` DESC";
+        "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn HAVING thema = ?";
       const [datas] = await db.query(sql, [topic]);
       res.json(datas);
     }
@@ -25,7 +25,7 @@ router.route("/")
 router.route("/category")
   .get(async (req, res, next) => {
     const sql =
-      "SELECT thema FROM blog_category";
+      "SELECT * FROM blog_category";
     const [datas] = await db.query(sql);
     res.json(datas);
   })
@@ -39,7 +39,7 @@ router.route("/addarticle").post(async (req, res, next) => {
   if (req.body) {
     const sql =
       // "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,'20220505',?,?);";
-      "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,NOW(),? ,2 );";
+      "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,NOW(),? ,6 );";
     const [datas] = await db.query(sql, [
       req.body.title,
       req.body.content,
