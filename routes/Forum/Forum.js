@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../../modules/mysql_config");
 const multer = require("multer");
 const app = require("../../app");
+const forumSql = "SELECT * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id"
 
 // 文章依分類顯示
 router.route("/")
@@ -65,14 +66,21 @@ router.route("/addarticle").post(async (req, res, next) => {
 //個別文章
 router.route("/:id").get(async (req, res, next) => {
   const id = req.params.id;
-  const sql = "SELECT * FROM blog_article where article_id = (select min(article_id) from blog_article where article_id > ?) UNION select * from blog_article where article_id = (select max(article_id) from blog_article where article_id < ?) union select * FROM blog_article WHERE article_id =? ORDER BY ABS(article_id);"
+  const sql = `${forumSql} where article_id = (select min(article_id) from blog_article where article_id > ?) UNION select * from blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id where article_id = (select max(article_id) from blog_article where article_id < ?) union select * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id WHERE article_id =? ORDER BY ABS(article_id);`
   // const sql =
   //   "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id=?";
   const datas = await db.query(sql, [id, id, id]);
-  // console.log(datas);
+  console.log(datas[0]);
   // console.log(id);
   res.json(datas[0]);
-});
+})
+  .delete((req, res, next) => {
+    const id = req.body.id;
+    const sql = "DELETE FROM blog_article WHERE `blog_article`.`article_id` = ?"
+    const datas = db.query(sql, [id]);
+    console.log(`刪除文章id=${id}`);
+    res.send(datas);
+  });
 
 
 module.exports = router;
