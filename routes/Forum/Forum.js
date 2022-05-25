@@ -8,7 +8,7 @@ const app = require("../../app");
 router.route("/")
   .get(async (req, res, next) => {
     if (req.query.topic == "null") {
-      //console.log('is null');
+      console.log('is null');
       const sql = "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id ORDER BY `blog_article`.`created_time` DESC";
       const [datas] = await db.query(sql);
       res.json(datas);
@@ -21,6 +21,18 @@ router.route("/")
       res.json(datas);
     }
   })
+
+// 文章依userID顯示
+router.route("/FrPersonalPage/:userID")
+  .get(async (req, res, next) => {
+    const id = req.params.userID;
+    console.log(id);
+    const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE users_id = ? ORDER BY `blog_article`.`created_time` DESC";
+    const [datas] = await db.query(sql, [id]);
+    res.json(datas);
+  })
+
+
 //分類
 router.route("/category")
   .get(async (req, res, next) => {
@@ -52,13 +64,13 @@ router.route("/addarticle").post(async (req, res, next) => {
 
 //個別文章
 router.route("/:id").get(async (req, res, next) => {
-  const id = (Number(req.params.id) + 1);
-  const sql = "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN `users` ON blog_article.users_id = users.id WHERE article_id <= ? ORDER BY article_id DESC LIMIT 3;"
+  const id = req.params.id;
+  const sql = "SELECT * FROM blog_article where article_id = (select min(article_id) from blog_article where article_id > ?) UNION select * from blog_article where article_id = (select max(article_id) from blog_article where article_id < ?) union select * FROM blog_article WHERE article_id =? ORDER BY ABS(article_id);"
   // const sql =
   //   "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id=?";
-  const datas = await db.query(sql, [id]);
-  console.log(datas);
-  console.log(id);
+  const datas = await db.query(sql, [id, id, id]);
+  // console.log(datas);
+  // console.log(id);
   res.json(datas[0]);
 });
 
