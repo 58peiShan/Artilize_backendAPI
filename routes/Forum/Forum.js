@@ -52,11 +52,12 @@ router.route("/addarticle").post(async (req, res, next) => {
   if (req.body) {
     const sql =
       // "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,'20220505',?,?);";
-      "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,NOW(),? ,6 );";
+      "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,NOW(),? ,? );";
     const [datas] = await db.query(sql, [
       req.body.title,
       req.body.content,
       req.body.category,
+      req.body.userid,
     ]);
     res.send(datas);
   }
