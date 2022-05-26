@@ -3,6 +3,9 @@ const router = express.Router();
 const db = require("../../modules/mysql_config");
 const multer = require("multer");
 const app = require("../../app");
+const { header } = require("express/lib/response");
+//const forumSql = "SELECT * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id left JOIN blog_comment ON blog_article.article_id = blog_comment.article_id where blog_article.article_id = (select min(blog_article.article_id) from blog_article where blog_article.article_id > ?) UNION select * from blog_article JOIN blog_category ON blog_article.category = blog_category.sn 
+// JOIN users ON blog_article.users_id = users.id left JOIN blog_comment ON blog_article.article_id = blog_comment.article_id where blog_article.article_id = (select max(blog_article.article_id) from blog_article where blog_article.article_id < ?) union select * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id left JOIN blog_comment ON blog_article.article_id = blog_comment.article_id WHERE blog_article.article_id =? ORDER by created_time;"
 const forumSql = "SELECT * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id"
 
 // 文章依分類顯示
@@ -66,15 +69,23 @@ router.route("/addarticle").post(async (req, res, next) => {
 
 //個別文章
 router.route("/:id").get(async (req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
   const id = req.params.id;
   const sql = `${forumSql} where article_id = (select min(article_id) from blog_article where article_id > ?) UNION select * from blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id where article_id = (select max(article_id) from blog_article where article_id < ?) union select * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id WHERE article_id =? ORDER BY ABS(article_id);`
-  // const sql =
-  //   "SELECT * FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id=?";
   const datas = await db.query(sql, [id, id, id]);
-  console.log(datas[0]);
-  // console.log(id);
+  //console.log(datas[0]);
   res.json(datas[0]);
 })
+
+  .post((req, res, next) => {
+    res.set("Content-Type", "application/json")
+    const id = req.body.id;
+    //console.log(id);
+    const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id = ?"
+    const [datas] = db.query(sql, [id]);
+    //console.log(datas);
+    res.json(datas);
+  })
   .delete((req, res, next) => {
     const id = req.body.id;
     const sql = "DELETE FROM blog_article WHERE `blog_article`.`article_id` = ?"
@@ -83,5 +94,12 @@ router.route("/:id").get(async (req, res, next) => {
     res.send(datas);
   });
 
-
+// 取留言
+router.route("/comments/:id").get(async (req, res, next) => {
+  const id = req.params.id;
+  const sql = "SELECT blog_article.article_id, `blog_comment_id`, `Blog_comment_content`, `COMMENT_time`, `nickname`, `username` FROM `blog_comment` JOIN `users` ON blog_comment.user_id = users.id JOIN `blog_article` ON blog_comment.article_id = blog_article.article_id where blog_article.article_id=? ORDER BY COMMENT_time DESC;"
+  const datas = await db.query(sql, [id]);
+  console.log(datas[0]);
+  res.json(datas[0]);
+})
 module.exports = router;

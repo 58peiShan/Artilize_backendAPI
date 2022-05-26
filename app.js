@@ -15,8 +15,10 @@ const usersRouter = require('./routes/Users/users');
 const exhibitionRouter = require('./routes/Exhibition/exhibition');
 const bookingRouter = require('./routes/Booking/booking');
 const ForumRouter = require('./routes/Forum/Forum');
+const ArticleCommentRouter = require('./routes/Forum/ArticleComment');
 const productRouter = require('./routes/Product/product');
 const B2BRouter = require('./routes/B2B/B2B');
+
 
 
 
@@ -47,6 +49,7 @@ app.use('/booking', bookingRouter);
 app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/forum', ForumRouter);
+app.use('/ArticleComment', ArticleCommentRouter);
 app.use('/B2B', B2BRouter);
 
 
