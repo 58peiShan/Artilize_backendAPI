@@ -62,10 +62,9 @@ router.route("/addarticle").post(async (req, res, next) => {
       req.body.category,
       req.body.userid,
     ]);
-    res.send(datas);
+    res.json(datas);
   }
 });
-
 
 //個別文章
 router.route("/:id").get(async (req, res, next) => {
