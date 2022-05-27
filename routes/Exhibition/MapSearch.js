@@ -8,6 +8,12 @@ router.get('/', async function (req, res, next) {
     res.json(datas);
     console.log(datas)
 });
+router.get('/ability', async function (req, res, next) {
+    const sql = `SELECT * from ability`
+    const [datas] = await db.query(sql);
+    res.json(datas);
+    console.log(datas)
+});
 
 
 
