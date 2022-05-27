@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require("../../modules/mysql_config");
 const multer = require("multer");
 const app = require("../../app");
-const { header } = require("express/lib/response");
 
 
 router.route("/")
@@ -15,16 +14,15 @@ router.route("/")
   //     //console.log(datas[0]);
   //     res.json(datas[0]);
   //   })
-  .post((req, res, next) => {
-    res.set("Content-Type", "application/json")
+  .post(async(req, res, next) => {
     const comment = req.body.comment;
     const id = req.body.userid;
     const article = req.body.article;
     console.log(comment);
     const sql = "INSERT INTO `blog_comment` (`Blog_comment_content`, `COMMENT_time`, `user_id`, `article_id`) VALUES ( ?, now(), ?, ?);"
-    const [datas] = db.query(sql, [comment, id, article]);
+    const [datas] =await db.query(sql, [comment, id, article]);
     //console.log(datas);
-    res.json(datas);
+    res.send(datas);
   })
 //     .delete((req, res, next) => {
 //       const id = req.body.id;
