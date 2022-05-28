@@ -62,10 +62,9 @@ router.route("/addarticle").post(async (req, res, next) => {
       req.body.category,
       req.body.userid,
     ]);
-    res.send(datas);
+    res.json(datas);
   }
 });
-
 
 //個別文章
 router.route("/:id").get(async (req, res, next) => {
@@ -76,14 +75,21 @@ router.route("/:id").get(async (req, res, next) => {
   //console.log(datas[0]);
   res.json(datas[0]);
 })
-
   .post((req, res, next) => {
-    res.set("Content-Type", "application/json")
     const id = req.body.id;
-    //console.log(id);
     const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id = ?"
     const [datas] = db.query(sql, [id]);
-    //console.log(datas);
+    res.json(datas);
+  })
+  .put(async (req, res, next) => {
+    const sql = "UPDATE `blog_article` SET `title` = ?, `content` = ?, `category` = ? WHERE `blog_article`.`article_id` = ?;"
+    const [datas] = await db.query(sql, [
+      req.body.title,
+      req.body.content,
+      req.body.category,
+      req.body.id,
+    ]);
+    console.log(req.body.title);
     res.json(datas);
   })
   .delete((req, res, next) => {
