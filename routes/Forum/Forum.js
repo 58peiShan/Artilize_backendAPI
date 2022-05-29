@@ -110,7 +110,7 @@ router.route("/:id").get(async (req, res, next) => {
 // 取留言
 router.route("/comments/:id").get(async (req, res, next) => {
   const id = req.params.id;
-  const sql = `SELECT blog_article.article_id, blog_comment_id, Blog_comment_content, DATE_FORMAT(COMMENT_time, "%Y-%m-%d") AS COMMENT_time, nickname, username FROM blog_comment JOIN users ON blog_comment.user_id = users.id JOIN blog_article ON blog_comment.article_id = blog_article.article_id where blog_article.article_id=? ORDER BY COMMENT_time DESC;`
+  const sql = `SELECT blog_article.article_id, blog_comment_id, Blog_comment_content, DATE_FORMAT(COMMENT_time, "%Y-%m-%d %H:%i") AS COMMENT_time, nickname, username FROM blog_comment JOIN users ON blog_comment.user_id = users.id JOIN blog_article ON blog_comment.article_id = blog_article.article_id where blog_article.article_id=? ORDER BY COMMENT_time DESC;`
   const datas = await db.query(sql, [id]);
   console.log(datas[0]);
   res.json(datas[0]);

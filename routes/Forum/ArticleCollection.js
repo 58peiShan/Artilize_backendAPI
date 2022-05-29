@@ -13,16 +13,23 @@ router.route("/:userID").post(async (req, res, next) => {
       res.send(datas);
 })
 
-router.route("/add").post((req, res, next) => {
-      if (req.body) {
-            const sql = "INSERT INTO `blog_article_like` (`user_id`, `article_id`) VALUES (?, ?)"
-            const id = req.body.userId
-            const articleid = req.body.articleId
-            console.log(req.body);
-            console.log(req.body.articleId);
-            const [datas] = db.query(sql, [id, articleid]);
-            res.json(datas)
-      };
+router.route("/add").post(async (req, res, next) => {
+      const sql = "INSERT INTO `blog_article_like` (`like_id`,`user_id`, `article_id`) VALUES (NULL,?, ?)"
+      const id = req.body.userId
+      const articleid = req.body.articleId
+      console.log(id);
+      console.log(req.body.articleId);
+      const datas = await db.query(sql, [null, 9, 116]);
+      res.json(datas)
+})
+
+router.route("/remove").delete((req, res, next) => {
+      const sql = "DELETE FROM blog_article_like WHERE `blog_article_like`.`article_id` = ? AND user_id =?"
+      const article = req.body.article
+      const id = req.body.userID
+      console.log(id);
+      const [datas] = db.query(sql, [article, id]);
+      res.send(datas)
 })
 
 
