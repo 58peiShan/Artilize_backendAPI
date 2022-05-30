@@ -19,7 +19,7 @@ router.route("/add").post(async (req, res, next) => {
       const articleid = req.body.articleId
       console.log(id);
       console.log(req.body.articleId);
-      const datas = await db.query(sql, [null, 9, 116]);
+      const datas = await db.query(sql, [id, articleid]);
       res.json(datas)
 })
 
