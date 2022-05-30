@@ -1,10 +1,10 @@
 var express = require('express');
+const cors =  require("cors") 
 var createError = require('http-errors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
-const cors = require('cors')
 
 var indexRouter = require('./routes/index');
 // 老師的示範先留著
@@ -15,6 +15,7 @@ const usersRouter = require('./routes/Users/users');
 const exhibitionRouter = require('./routes/Exhibition/exhibition');
 const bookingRouter = require('./routes/Booking/booking');
 const ForumRouter = require('./routes/Forum/Forum');
+const UploadRouter = require('./routes/Forum/upload');
 const ArticleCommentRouter = require('./routes/Forum/ArticleComment');
 const ArticleCollectionRouter = require('./routes/Forum/ArticleCollection');
 const productRouter = require('./routes/Product/product');
@@ -30,11 +31,14 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(express.static('./upload/'))
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(cors());
 
 app.use('/', indexRouter);
@@ -50,6 +54,7 @@ app.use('/booking', bookingRouter);
 app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/forum', ForumRouter);
+app.use('/upload', UploadRouter);
 app.use('/ArticleComment', ArticleCommentRouter);
 app.use('/ArticleCollection', ArticleCollectionRouter);
 app.use('/B2B', B2BRouter);

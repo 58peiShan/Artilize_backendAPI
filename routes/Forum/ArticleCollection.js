@@ -13,22 +13,32 @@ router.route("/:userID").post(async (req, res, next) => {
       res.send(datas);
 })
 
-router.route("/add").post(async (req, res, next) => {
-      const sql = "INSERT INTO `blog_article_like` (`like_id`,`user_id`, `article_id`) VALUES (NULL,?, ?)"
-      const id = req.body.userId
-      const articleid = req.body.articleId
-      console.log(id);
-      console.log(req.body.articleId);
-      const datas = await db.query(sql, [null, 9, 116]);
+router.route("/add")
+.get(async(req,res,next)=>{
+      console.log('addGET');
+      const sql = "select * from blog_article_like"
+      const [datas] =await db.query(sql)
+      console.log(datas);
       res.json(datas)
 })
+.post(async(req, res, next) => {
+      console.log(req.body);
+      //const sql = "SELECT * FROM `blog_article_like`"
+      const sql = "INSERT INTO `blog_article_like` (`like_id`,`user_id`, `article_id`) VALUES (NULL,?, ?)"
+      const id = req.body.id
+      const articleid = req.body.article
+      const [datas] =await db.query(sql,[id,articleid])
+      console.log(datas);
+      console.log(`addString  ${datas}`);
+      res.send(datas)
+})
 
-router.route("/remove").delete((req, res, next) => {
-      const sql = "DELETE FROM blog_article_like WHERE `blog_article_like`.`article_id` = ? AND user_id =?"
+router.route("/remove").delete(async(req, res, next) => {
+      const sql = "DELETE FROM blog_article_like WHERE `article_id` = ? AND user_id =?"
       const article = req.body.article
-      const id = req.body.userID
-      console.log(id);
-      const [datas] = db.query(sql, [article, id]);
+      const id = req.body.id
+      console.log(req.body)
+      const [datas] = await db.query(sql, [article, id]);
       res.send(datas)
 })
 
