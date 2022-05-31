@@ -21,19 +21,28 @@ const upload = multer({
     }
 })
 
-router.route('/', upload.single('abc')).post((req, res, next) => {
-    console.log(req.file);
+router.route('/', upload.single('file')).post((req, res, next) => {
     console.log(req.body);
-    // res.send('456')
+    const url = '/upload/' + storage.filename;
+
+    if (req.file === undefined) {
+        return res.send({
+            errno: -1,
+            msg: `no file`
+        });
+    } else {
+        res.json({
+            errno: 0,
+            msg: 'upload success',
+            url
+        });
+    }
+
+    //res.send('123')
     // 即将上传图片的key值 form-data对象{key: value}
     // 检查是否有文件待上传
-    // if (req.file === undefined) {
-    //     return res.send({
-    //         errno: -1,
-    //         msg: 'no file'
-    //     });
-    // }
-    // const { size, mimetype, filename } = req.file;
+
+    //const { size, mimetype, filename } = req.file;
     // const types = ['jpg', 'jpeg', 'png', 'gif'];
     // const tmpTypes = mimetype.split('/')[1];
     // const SIZELIMIT = 500000;
@@ -54,12 +63,7 @@ router.route('/', upload.single('abc')).post((req, res, next) => {
     //     });
     // }
     // // 路径可根据设置的静态目录指定
-    // const url = '/public/img/' + filename;
-    // res.json({
-    //     errno: 0,
-    //     msg: 'upload success',
-    //     url
-    // });
+
 })
 
 
