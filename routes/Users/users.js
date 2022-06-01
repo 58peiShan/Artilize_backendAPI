@@ -26,6 +26,25 @@ router.post('/signup',upload.none(), async function (req, res, next) {
  
 });
 
+router.get('/signup/checkaccount',async function(req,res,next){
+  let output = {
+      canUse: false
+  }
+  
+  const sql = `SELECT Count(*) as total FROM users WHERE userAccount=?`
+  const [datas]= await db.query(sql,[req.query.name])
+  // console.log(datas)
+  const {total}=datas[0]
+  console.log(total)
+  if(total > 0){
+     
+     res.json(output)
+  }else{
+    output.canUse = true
+    res.json(output)
+  }
+})
+
 
 
 module.exports = router;
