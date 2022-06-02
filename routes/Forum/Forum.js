@@ -13,14 +13,17 @@ router.route("/")
   .get(async (req, res, next) => {
     if (req.query.topic == "null") {
       console.log('is null');
-      const sql = `SELECT article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time ,favorited FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`;
+      const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
+      FROM blog_article 
+      JOIN blog_category ON blog_article.category = blog_category.sn 
+      JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`;
       const [datas] = await db.query(sql);
       res.json(datas);
     } else {
       //console.log(req.query);
       const topic = decodeURI(`${req.query.topic}`);
       const sql =
-        `SELECT article_id,	
+        `SELECT blog_article.article_id,	
         title,
         DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time,	
         content	,
@@ -28,7 +31,10 @@ router.route("/")
         users_id,	
         sn,	
         thema,
-        favorited FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn HAVING thema = ? ORDER BY blog_article.created_time DESC`;
+        favorited
+        FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn
+
+        HAVING thema = ? ORDER BY blog_article.created_time DESC`;
       const [datas] = await db.query(sql, [topic]);
       res.json(datas);
     }
@@ -63,7 +69,7 @@ router.route("/addarticle").post(async (req, res, next) => {
   if (req.body) {
     const sql =
       // "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,'20220505',?,?);";
-      "INSERT INTO `blog_article`(`title`, `content`, `created_time`, `category`, `users_id`) VALUES (?,?,NOW(),? ,? );";
+      "INSERT INTO `blog_article`(`title`, `content`, `created_time`,favorited, `category`, `users_id`) VALUES (?,?,NOW(),0,? ,? );";
     const [datas] = await db.query(sql, [
       req.body.title,
       req.body.content,
@@ -85,7 +91,7 @@ router.route("/:id").get(async (req, res, next) => {
 })
   .post((req, res, next) => {
     const id = req.body.id;
-    const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id = ?"
+    const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username,favorited, FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE article_id = ?"
     const [datas] = db.query(sql, [id]);
     res.json(datas);
   })

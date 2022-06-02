@@ -3,13 +3,29 @@ const router = express.Router();
 const db = require("../../modules/mysql_config");
 const multer = require("multer");
 
-router.route("/:userID").post(async (req, res, next) => {
-      const id = req.body.userID;
-      const sql = `SELECT * FROM blog_article_like 
-      JOIN users ON blog_article_like.user_id = users.id 
-      JOIN blog_article ON blog_article_like.article_id = blog_article.article_id
-      WHERE blog_article_like.user_id = ?`
-      const [datas] = await db.query(sql, [id]);
+// 透過用戶ID拿到藏文章
+// router.route("/:userID").post(async (req, res, next) => {
+//       const id = req.body.userID;
+//       const sql = `SELECT * FROM blog_article_like 
+//       JOIN users ON blog_article_like.user_id = users.id 
+//       JOIN blog_article ON blog_article_like.article_id = blog_article.article_id
+//       WHERE blog_article_like.user_id = ?`
+//       const [datas] = await db.query(sql, [id]);
+//       res.send(datas);
+// })
+router.route("/").get(async (req, res, next) => {
+      const sql = `SELECT blog_article.article_id,	
+      title,
+      DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time,	
+      content,
+      category,
+      users_id,	
+      sn,	
+      thema,
+      favorited FROM blog_article
+      JOIN users ON blog_article.users_id = users.id JOIN blog_category ON blog_article.category = blog_category.sn
+      WHERE favorited=1 ORDER BY created_time DESC`
+      const [datas] = await db.query(sql);
       res.send(datas);
 })
 router.route("/").get(async (req, res, next) => {
@@ -41,27 +57,19 @@ router.route("/").get(async (req, res, next) => {
                   res.json(datas);
             }
       })
-router.route("/add")
-.get(async(req,res,next)=>{
-      console.log('addGET');
-      const sql = "select * from blog_article_like"
-      const [datas] =await db.query(sql)
-      console.log(datas);
-      res.json(datas)
-})
-.post(async(req, res, next) => {
-      console.log(req.body);
-      //const sql = "SELECT * FROM `blog_article_like`"
-      const sql = "INSERT INTO `blog_article_like` (`like_id`,`user_id`, `article_id`) VALUES (NULL,?, ?)"
-      const id = req.body.id
-      const articleid = req.body.article
-      const [datas] =await db.query(sql,[id,articleid])
-      console.log(datas);
-      console.log(`addString  ${datas}`);
-      res.send(datas)
-})
 
-router.route("/remove").delete(async(req, res, next) => {
+router.route("/add")
+//測試是不是路徑錯=>不是
+// .get(async (req, res, next) => {
+//       console.log('addGET');
+//       const sql = "select * from blog_article_like"
+//       const [datas] = await db.query(sql)
+//       console.log(datas);
+//       res.json(datas)
+// })
+
+
+router.route("/remove").delete(async (req, res, next) => {
       const sql = "DELETE FROM blog_article_like WHERE `article_id` = ? AND user_id =?"
       const article = req.body.article
       const id = req.body.id
