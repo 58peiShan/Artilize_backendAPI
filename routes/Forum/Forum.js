@@ -13,7 +13,7 @@ router.route("/")
   .get(async (req, res, next) => {
     if (req.query.topic == "null") {
       console.log('is null');
-      const sql = `SELECT article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`;
+      const sql = `SELECT article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time ,favorited FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`;
       const [datas] = await db.query(sql);
       res.json(datas);
     } else {
@@ -27,7 +27,8 @@ router.route("/")
         category,
         users_id,	
         sn,	
-        thema FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn HAVING thema = ? ORDER BY blog_article.created_time DESC`;
+        thema,
+        favorited FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn HAVING thema = ? ORDER BY blog_article.created_time DESC`;
       const [datas] = await db.query(sql, [topic]);
       res.json(datas);
     }
@@ -38,7 +39,7 @@ router.route("/FrPersonalPage/:userID")
   .get(async (req, res, next) => {
     const id = req.params.userID;
     console.log(id);
-    const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE users_id = ? ORDER BY `blog_article`.`created_time` DESC";
+    const sql = "SELECT article_id, title, created_time, content, users_id, thema, nickname, username, FROM blog_article JOIN `blog_category` ON blog_article.category = blog_category.sn JOIN`users` ON blog_article.users_id = users.id WHERE users_id = ? ORDER BY `blog_article`.`created_time` DESC";
     const [datas] = await db.query(sql, [id]);
     res.json(datas);
   })

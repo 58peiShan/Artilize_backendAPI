@@ -12,7 +12,35 @@ router.route("/:userID").post(async (req, res, next) => {
       const [datas] = await db.query(sql, [id]);
       res.send(datas);
 })
-
+router.route("/").get(async (req, res, next) => {
+      const sql = `SELECT blog_article.article_id,	
+      title,
+      DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time,	
+      content,
+      category,
+      users_id,	
+      sn,	
+      thema,
+      favorited FROM blog_article
+      JOIN users ON blog_article.users_id = users.id JOIN blog_category ON blog_article.category = blog_category.sn
+      WHERE favorited=1 ORDER BY created_time DESC`
+      const [datas] = await db.query(sql);
+      res.send(datas);
+})
+      .put(async (req, res, next) => {
+            console.log(req.body);
+            if (req.body.favorited == 1) {
+                  const id = req.body.article
+                  const sql = "UPDATE `blog_article` SET `favorited` = 0 WHERE article_id=?"
+                  const [datas] = await db.query(sql, [id]);
+                  res.json(datas);
+            } else {
+                  const id = req.body.article
+                  const sql = "UPDATE `blog_article` SET `favorited` = 1 WHERE article_id=?"
+                  const [datas] = await db.query(sql, [id]);
+                  res.json(datas);
+            }
+      })
 router.route("/add")
 .get(async(req,res,next)=>{
       console.log('addGET');

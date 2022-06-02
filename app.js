@@ -1,5 +1,6 @@
 var express = require('express');
-const cors =  require("cors") 
+const cors =  require("cors")
+const algoliasearch = require('algoliasearch')
 var createError = require('http-errors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -15,11 +16,12 @@ const usersRouter = require('./routes/Users/users');
 const exhibitionRouter = require('./routes/Exhibition/exhibition');
 const bookingRouter = require('./routes/Booking/booking');
 const ForumRouter = require('./routes/Forum/Forum');
-const UploadRouter = require('./routes/Forum/upload');
+//const UploadRouter = require('./routes/Forum/upload');
 const ArticleCommentRouter = require('./routes/Forum/ArticleComment');
 const ArticleCollectionRouter = require('./routes/Forum/ArticleCollection');
 const productRouter = require('./routes/Product/product');
 const B2BRouter = require('./routes/B2B/B2B');
+const NewsLetterRouter = require('./routes/newsLetter');
 
 
 
@@ -54,9 +56,10 @@ app.use('/booking', bookingRouter);
 app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/forum', ForumRouter);
-app.use('/upload', UploadRouter);
+//app.use('/upload', UploadRouter);
 app.use('/ArticleComment', ArticleCommentRouter);
 app.use('/ArticleCollection', ArticleCollectionRouter);
+app.use('/NewsLetter', NewsLetterRouter);
 app.use('/B2B', B2BRouter);
 
 
@@ -78,5 +81,37 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+
+//Alogolia Thing
+// // Connect and authenticate with your Algolia app
+// const client = algoliasearch('PZOO31BWY9', process.env.ALGOLIA_API)
+
+// // Create a new index and add a record
+// const index = client.initIndex('test_index')
+// const record = { objectID: 4, name: 'djoijoijsdi4' }
+
+
+// index.saveObject(record).wait()
+
+// // Search the index and print the results
+// index
+//   .search('lu')
+//   .then(({ hits }) => console.log(hits[0]))
+//   .catch((err)=>{
+//       console.log(err);
+//   })
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = app;
