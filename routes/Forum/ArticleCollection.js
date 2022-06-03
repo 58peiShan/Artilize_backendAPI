@@ -61,7 +61,7 @@ router.route("/").get(async (req, res, next) => {
 router.route("/search")
       .post(async (req, res, next) => {
             let keyword = req.body.keyword
-            const sql = "SELECT * FROM `blog_article` WHERE title LIKE  ? ;"
+            const sql = "SELECT * FROM `blog_article` WHERE title LIKE  ?  ORDER BY blog_article.created_time DESC;"
             const [datas] = await db.query(sql, [`%${keyword}%`])
             console.log(datas);
             res.json(datas)
