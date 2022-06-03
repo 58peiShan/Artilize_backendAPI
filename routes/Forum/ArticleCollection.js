@@ -58,15 +58,14 @@ router.route("/").get(async (req, res, next) => {
             }
       })
 
-router.route("/add")
-//測試是不是路徑錯=>不是
-// .get(async (req, res, next) => {
-//       console.log('addGET');
-//       const sql = "select * from blog_article_like"
-//       const [datas] = await db.query(sql)
-//       console.log(datas);
-//       res.json(datas)
-// })
+router.route("/search")
+      .post(async (req, res, next) => {
+            let keyword = req.body.keyword
+            const sql = "SELECT * FROM `blog_article` WHERE title LIKE  ? ;"
+            const [datas] = await db.query(sql, [`%${keyword}%`])
+            console.log(datas);
+            res.json(datas)
+      })
 
 
 router.route("/remove").delete(async (req, res, next) => {
