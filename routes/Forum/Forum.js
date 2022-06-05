@@ -16,7 +16,20 @@ router.route("/")
       const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
       FROM blog_article 
       JOIN blog_category ON blog_article.category = blog_category.sn 
-      JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`;
+      JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`
+      console.log(req.query)
+
+      if (req.query.limit) {
+        const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
+      FROM blog_article 
+      JOIN blog_category ON blog_article.category = blog_category.sn 
+      JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC LIMIT ?,3`;
+        const limit = Number(req.query.limit)
+        console.log(req.query);
+        const [datas] = await db.query(sql, [limit]);
+        res.status(200).json
+        res.json(datas);
+      }
       const [datas] = await db.query(sql);
       res.json(datas);
     } else {
