@@ -8,7 +8,7 @@ const upload = multer()
 
 router.route('/')
     .get(async(req, res, next)=> {
-        const sql = "SELECT * FROM cart_exhibition";
+        const sql = "SELECT * FROM cart_exhibition ORDER BY cartExID DESC";
         const [datas] = await db.query(sql);
         res.json(datas);
     })
