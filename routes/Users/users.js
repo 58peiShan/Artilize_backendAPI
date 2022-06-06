@@ -4,6 +4,23 @@ var router = express.Router();
 const db = require('../../modules/mysql_config');
 const multer = require('multer');
 const upload = multer();
+const nodemailer = require('nodemailer')
+const transporter = {
+  host:'smtp.gmail.com',
+  port:587,
+  secure:false,
+  auth:{
+    user:`${process.env.EMAIL}`,
+    pass:`${process.env.EMAILPASSWORD}`,
+  },
+  secureConnection: 'false',
+  tls: {
+      ciphers: 'SSLv3',
+      rejectUnauthorized: false
+
+  }
+};
+const transporter1 = nodemailer.createTransport(transporter)
 
 /* GET users listing. */
 router.get('/', async (req, res, next)=> {
@@ -160,7 +177,8 @@ const ext = {
   'image/png':'.png',
   'image/gif':'.gif',
 }
-const path= require("path")
+const path= require("path");
+const { getMaxListeners } = require('process');
 const storage = multer.diskStorage({
   destination:(req,file,callBack)=>{
     callBack(null,'./public/images')
@@ -219,6 +237,40 @@ router.post('/changePassword',upload.none(),async(req,res,next)=>{
 
   } catch (error) {
     console.log(error)
+  }
+})
+
+router.post('/resetpassword',upload.none(),async(req,res,next)=>{
+  try {
+    let output = {
+      ok:false
+    }
+    console.log(req.body)
+    const {userEmail} = req.body
+    const sql = 'SELECT userId,COUNT(userEmail) AS total,userName from users where userEmail=?'
+    const [datas] = await db.query(sql,[userEmail])
+    console.log(datas)
+    const{total,userId,userName}=datas[0]
+    // console.log(userEmail)
+    if(datas.total===0){
+      res.json(output)
+    }else if(total >0){
+
+      transporter1.sendMail({
+        from:`${process.env.EMAIL}`,
+        to:`${userEmail}`,
+        subject:"Artilize密碼重設確認信",
+        html:`<h3>${userName}您好:</h3>
+              <p>請點選以下連結進行重設密碼:</p>
+              <a href='${process.env.URL}/users/resetpassword/${userId}'>${process.env.URL}/users/resetpassword/${userId}</a>`
+      }).then(info => {
+        console.log({ info });
+        output.ok=true
+        res.json(output)
+      }).catch(console.error);
+    }
+  } catch (error) {
+    
   }
 })
 
