@@ -128,24 +128,29 @@ router.post('/login',upload.none(),async (req,res,next)=>{
 
 //編輯
 router.put('/edit',upload.none(),async(req,res,next)=>{
-  let output = {
-    ok:false
+  try {
+    let output = {
+      ok:false
+    }
+    // console.log(req.body)
+    const response = JSON.parse(JSON.stringify(req.body))
+    console.log(response)
+    const{userName,userMobile,userAddress,userNickName,userBirthday,userGender,userAvatar} = response
+    const sql = "UPDATE users SET userName=?,userMobile=?,userAddress=?,userNickName=?,userBirthday=?,userGender=?,userAvatar=? WHERE userId=?"
+    const [datas] = await db.query(sql,[userName,userMobile,userAddress,userNickName,userBirthday,userGender,userAvatar,req.query.id])
+    const sql1 = "SELECT userAvatar from users where userId=?"
+    const [datas1] = await db.query(sql1,req.query.id)
+    console.log(datas1[0])
+    if(datas.affectedRows ===1){
+      output.ok = true
+      output.userAvatar = datas1[0].userAvatar
+    }
+    // console.log(req.query.id)
+    res.json(output)
+    
+  } catch (error) {
+    console.log(error)
   }
-  // console.log(req.body)
-  const response = JSON.parse(JSON.stringify(req.body))
-  console.log(response)
-  const{userName,userMobile,userAddress,userNickName,userBirthday,userGender,userAvatar} = response
-  const sql = "UPDATE users SET userName=?,userMobile=?,userAddress=?,userNickName=?,userBirthday=?,userGender=?,userAvatar=? WHERE userId=?"
-  const [datas] = await db.query(sql,[userName,userMobile,userAddress,userNickName,userBirthday,userGender,userAvatar,req.query.id])
-  const sql1 = "SELECT userAvatar from users where userId=?"
-  const [datas1] = await db.query(sql1,req.query.id)
-  console.log(datas1[0])
-  if(datas.affectedRows ===1){
-    output.ok = true
-    output.userAvatar = datas1[0].userAvatar
-  }
-  // console.log(req.query.id)
-  res.json(output)
 
 })
 
@@ -170,20 +175,51 @@ const fileFilter = (req,file,cb)=>{
 const uploadImage = multer({storage, fileFilter});
 
 router.post('/uploadImage',uploadImage.single("file"),async (req,res,next)=>{
-  let output ={ok:false}
-  if(req.file === undefined){
-    res.json(output)
-  }else{
-    const response = (JSON.parse(JSON.stringify(req.file)))
-    const {filename} = response
-    output.ok = true
-    output.filename = filename
-    res.json(output)
-
+  try {
+    let output ={ok:false}
+    if(req.file === undefined){
+      res.json(output)
+    }else{
+      const response = (JSON.parse(JSON.stringify(req.file)))
+      const {filename} = response
+      output.ok = true
+      output.filename = filename
+      res.json(output)
+  
+    }
+  } catch (error) {
+    console.log(error)
   }
   // console.log(JSON.parse(JSON.stringify(req.body)))
   // console.log(JSON.parse(JSON.stringify(req.file)))
 
+})
+
+router.post('/changePassword',upload.none(),async(req,res,next)=>{
+  try {
+    let output = {
+      ok:false
+    }
+    // console.log(req.query.userId)
+    // console.log(req.body)
+    const{oldPassword,newPassword,confirmNewPassword} =req.body
+    // console.log(oldPassword)
+    const sql = "SELECT COUNT(userPassword) AS total FROM users WHERE userPassword=? and userId=? "
+    const [datas] = await db.query(sql,[oldPassword,req.query.userId])
+    // console.log(datas[0].total)
+    if(datas[0].total === 0){
+      res.json(output)
+    }else if(datas[0].total >0){
+      const sql2 = "UPDATE users SET userPassword=? WHERE userId=?"
+      const [datas1] = await db.query(sql2,[newPassword,req.query.userId])
+      console.log(datas1)
+      output.ok = true
+      res.json(output)
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 
