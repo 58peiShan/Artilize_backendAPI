@@ -12,26 +12,28 @@ const forumSql = "SELECT * FROM blog_article JOIN blog_category ON blog_article.
 router.route("/")
   .get(async (req, res, next) => {
     if (req.query.topic == "null") {
-      console.log('is null');
-      const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
-      FROM blog_article 
-      JOIN blog_category ON blog_article.category = blog_category.sn 
-      JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`
-      console.log(req.query)
-
       if (req.query.limit) {
-        const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
-      FROM blog_article 
-      JOIN blog_category ON blog_article.category = blog_category.sn 
-      JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC LIMIT ?,3`;
         const limit = Number(req.query.limit)
+        const page = Number(req.query.page)
+        const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
+        FROM blog_article 
+        JOIN blog_category ON blog_article.category = blog_category.sn 
+        JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC LIMIT ?,?`;
         console.log(req.query);
-        const [datas] = await db.query(sql, [limit]);
-        res.status(200).json
+        const [datas] = await db.query(sql, [limit,page]);
+        // res.status(200).json
+        res.json(datas);
+      }else{
+        console.log('topic is null');
+        const sql = `SELECT blog_article.article_id, title, DATE_FORMAT(created_time, "%Y-%m-%d") AS created_time, content, category, users_id, sn, thema, id, username, nickname, avatar,favorited, DATE_FORMAT(created_at, "%Y-%m-%d")AS comment_time 
+        FROM blog_article 
+        JOIN blog_category ON blog_article.category = blog_category.sn 
+        JOIN users ON blog_article.users_id = users.id ORDER BY blog_article.created_time DESC`
+        console.log(req.query)
+        const [datas] = await db.query(sql);
         res.json(datas);
       }
-      const [datas] = await db.query(sql);
-      res.json(datas);
+      
     } else {
       //console.log(req.query);
       const topic = decodeURI(`${req.query.topic}`);
@@ -46,12 +48,21 @@ router.route("/")
         thema,
         favorited
         FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn
-
         HAVING thema = ? ORDER BY blog_article.created_time DESC`;
       const [datas] = await db.query(sql, [topic]);
       res.json(datas);
     }
   })
+
+  //搜尋
+  router.route("/search")
+      .post(async (req, res, next) => {
+            let keyword = req.body.keyword
+            const sql = "SELECT * FROM `blog_article` WHERE title LIKE  ?  ORDER BY blog_article.created_time DESC;"
+            const [datas] = await db.query(sql, [`%${keyword}%`])
+            res.json(datas)
+            console.log(datas);
+      })
 
 // 文章依userID顯示
 router.route("/FrPersonalPage/:userID")
