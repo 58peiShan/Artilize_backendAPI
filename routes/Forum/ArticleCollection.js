@@ -22,8 +22,9 @@ router.route("/").get(async (req, res, next) => {
       users_id,	
       sn,	
       thema,
-      favorited FROM blog_article
-      JOIN users ON blog_article.users_id = users.id JOIN blog_category ON blog_article.category = blog_category.sn
+      favorited, 
+      userAvatar FROM blog_article
+      JOIN users ON blog_article.users_id = users.userId JOIN blog_category ON blog_article.category = blog_category.sn
       WHERE favorited=1 ORDER BY created_time DESC`
       const [datas] = await db.query(sql);
       res.send(datas);
@@ -37,8 +38,9 @@ router.route("/").get(async (req, res, next) => {
       users_id,	
       sn,	
       thema,
-      favorited FROM blog_article
-      JOIN users ON blog_article.users_id = users.id JOIN blog_category ON blog_article.category = blog_category.sn
+      favorited,
+       userAvatar FROM blog_article
+      JOIN users ON blog_article.users_id = users.userId JOIN blog_category ON blog_article.category = blog_category.sn
       WHERE favorited=1 ORDER BY created_time DESC`
       const [datas] = await db.query(sql);
       res.send(datas);
