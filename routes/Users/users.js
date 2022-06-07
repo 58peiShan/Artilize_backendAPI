@@ -240,6 +240,32 @@ router.post('/changePassword',upload.none(),async(req,res,next)=>{
   }
 })
 
+router.post('/resetPassword1',upload.none(),async(req,res,next)=>{
+  try {
+    let output = {
+      ok:false
+    }
+    console.log(req.body)
+    const {newPassword} = req.body
+    console.log(req.query.userId)
+    const sql = "UPDATE users SET userPassword=? WHERE userId=?"
+    const [datas1] = await db.query(sql,[newPassword,req.query.userId])
+    console.log(datas1)
+    if(datas1.affectedRows===1){
+      output.ok=true
+      res.json(output)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+
+
+
+////email寄信
+
 router.post('/resetpassword',upload.none(),async(req,res,next)=>{
   try {
     let output = {
@@ -247,12 +273,15 @@ router.post('/resetpassword',upload.none(),async(req,res,next)=>{
     }
     console.log(req.body)
     const {userEmail} = req.body
-    const sql = 'SELECT userId,COUNT(userEmail) AS total,userName from users where userEmail=?'
+    console.log(userEmail)
+    const sql = 'SELECT userId,COUNT(userEmail) AS total,userAccount from users where userEmail=?'
     const [datas] = await db.query(sql,[userEmail])
     console.log(datas)
-    const{total,userId,userName}=datas[0]
+    const{total,userId,userAccount}=datas[0]
     // console.log(userEmail)
-    if(datas.total===0){
+    console.log(total)
+    if(total==0){
+      console.log(output)
       res.json(output)
     }else if(total >0){
 
@@ -260,9 +289,176 @@ router.post('/resetpassword',upload.none(),async(req,res,next)=>{
         from:`${process.env.EMAIL}`,
         to:`${userEmail}`,
         subject:"Artilize密碼重設確認信",
-        html:`<h3>${userName}您好:</h3>
-              <p>請點選以下連結進行重設密碼:</p>
-              <a href='${process.env.URL}/users/resetpassword/${userId}'>${process.env.URL}/users/resetpassword/${userId}</a>`
+        html:`
+              <!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Reset Password Email Template</title>
+    <meta name="description" content="Reset Password Email Template." />
+    <style type="text/css">
+      a:hover {
+        text-decoration: underline !important;
+      }
+    </style>
+  </head>
+
+  <body
+    marginheight="0"
+    topmargin="0"
+    marginwidth="0"
+    style="margin: 0px; background-color: #f2f3f8"
+    leftmargin="0"
+  >
+    <!--100% body table-->
+    <table
+      cellspacing="0"
+      border="0"
+      cellpadding="0"
+      width="100%"
+      bgcolor="#f2f3f8"
+      style="
+        @import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700);
+        font-family: 'Open Sans', sans-serif;
+      "
+    >
+      <tr>
+        <td>
+          <table
+            style="background-color: #f2f3f8; max-width: 670px; margin: 0 auto"
+            width="100%"
+            border="0"
+            align="center"
+            cellpadding="0"
+            cellspacing="0"
+          >
+            <tr>
+              <td style="height: 80px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">
+                <a href="http://localhost:3000" title="logo" target="_blank">
+                  <img
+                    width="60"
+                    src="cid:unique@nodemailer.com"
+                    title="logo"
+                    alt="logo"
+                  />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 20px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td>
+                <table
+                  width="95%"
+                  border="0"
+                  align="center"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    max-width: 670px;
+                    background: #fff;
+                    border-radius: 3px;
+                    text-align: center;
+                    -webkit-box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
+                    -moz-box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
+                    box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
+                  "
+                >
+                  <tr>
+                    <td style="height: 40px">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0 35px">
+                      <h1
+                        style="
+                          color: #1e1e2d;
+                          font-weight: 500;
+                          margin: 0;
+                          font-size: 32px;
+                          font-family: 'Rubik', sans-serif;
+                        "
+                      >
+                      ${userAccount}您好:
+                      </h1>
+                      <span
+                        style="
+                          display: inline-block;
+                          vertical-align: middle;
+                          margin: 29px 0 26px;
+                          border-bottom: 1px solid #cecece;
+                          width: 100px;
+                        "
+                      ></span>
+                      <p
+                        style="
+                          color: #455056;
+                          font-size: 15px;
+                          line-height: 24px;
+                          margin: 0;
+                        "
+                      >請點選按鈕以進行重設密碼</p>
+                      <a
+                        href="${process.env.URL}/users/resetpassword/${userId}"
+                        style="
+                          background: rgb(65, 83, 187);
+                          text-decoration: none !important;
+                          font-weight: 500;
+                          margin-top: 35px;
+                          color: #fff;
+                          text-transform: uppercase;
+                          font-size: 14px;
+                          padding: 10px 24px;
+                          display: inline-block;
+                          border-radius: 50px;
+                        "
+                        >重設密碼</a
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="height: 40px">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="height: 20px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">
+                <p
+                  style="
+                    font-size: 14px;
+                    color: rgba(69, 80, 86, 0.7411764705882353);
+                    line-height: 18px;
+                    margin: 0 0 0;
+                  "
+                >
+                  &copy; <strong>www.Artilize.com</strong>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 80px">&nbsp;</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  
+  </body>
+</html>
+`,
+attachments:[{
+  filename:'image.png',
+  path:"https://i.ibb.co/mzW7NgG/logo.png",
+  cid:"unique@nodemailer.com"
+}]
       }).then(info => {
         console.log({ info });
         output.ok=true
