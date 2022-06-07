@@ -40,6 +40,30 @@ const ext = {
 // const upload = multer({storage :fileStorageEngine});
 
 
+//http://localhost:5000/B2B/B2B/direction
+router.route('/B2B/direction')
+.get(async (req,res,next)=>{
+  const sql = "SELECT * FROM exhibition_direction";
+  const [datas] = await db.query(sql);
+ res.json(datas);
+})
+//http://localhost:5000/B2B/B2B/city
+router.route('/B2B/city')
+.get(async (req,res,next)=>{
+  const sql = "SELECT * FROM exhibition_city";
+  const [datas] = await db.query(sql);
+ res.json(datas);
+})
+//http://localhost:5000/B2B/B2B/kind
+router.route('/B2B/kind')
+.get(async (req,res,next)=>{
+  const sql = "SELECT * FROM exhibition_kind";
+  const [datas] = await db.query(sql);
+ res.json(datas);
+})
+
+
+
   // Get http://localhost:5000/B2B/B2B
   router.route('/B2B')
   .get(async (req,res,next)=>{
@@ -48,34 +72,56 @@ const ext = {
        res.json(datas);
     })
 
-  //POST http://localhost:5000/B2B/
+    //POST http://localhost:5000/B2B/B2B
    
      .post(upload.array("img",2),async (req,res,next)=>{ //多張圖片
-   
-        console.log(req.body) 
-        
+        // console.log(req.body) 
         // console.log(req.files[0].filename) 
-        // console.log(req.files[1].filename) 
-        
+        // console.log(req.files[1].filename)      
         //解構 req.body req.file 
-        //req.body.name,req.body.date,req.body.place
         const{aName,start,end,time,intro,fkCityId,fkMuseumId,fkKindId} = req.body 
-        const{name,price,introT,amount} =req.body
-        //req.file.filename
-        const{filename} = req.files 
-        // const sql = "INSERT INTO form (name,imgA,imgB,date,place) VALUES (?,?,?,?,?)";
-       const sql ="INSERT INTO exhibition_actadm(aName,pic1,pic2,start,end,time,intro,fkCityId,fkMuseumId,fkKindId)VALUES(?,?,?,?,?,now(),?,?,?,?)"
-       const sql1 ="INSERT INTO exhibition_ticket(name,price,introT,amount)VALUES(?,?,?,?)"
-        // const [datas] = await db.query(sql,[req.body]);
+        const{name,price,tintro,amount} =req.body
+        const{direction} =req.body
+        console.log(fkCityId)
+        console.log(fkMuseumId)
+        console.log(fkKindId)
+        console.log(direction)
+        console.log('name', name)
+        console.log('price', price)
+        console.log('tintro', tintro)
+        console.log('amount', amount)
+
+       const sql ="INSERT INTO exhibition_actadm(aName,pic1,pic2,start,end,time,intro,fkCityId,fkMuseumId,fkKindId)VALUES(?,?,?,?,?,now(),?,?,?,?)";
+
+       const sql1 ="INSERT INTO exhibition_ticket(name,price,tintro,amount)VALUES(?,?,?,?)";
+
+      //  const sql2 = "INSERT INTO exhibition_direction(mid)VALUES(?)"
+
+      
+      //  const sql3 ="INSERT INTO exhibition_city()VALUES()"
+      //  const sql3 ="INSERT INTO exhibition_city()VALUES()"
         
         const [datas] = await db.query(sql,[aName,req.files[0].filename,req.files[1].filename,start,end,intro,fkCityId,fkMuseumId,fkKindId],);
-        const [datas2] = await db.query(sql1,[req.body.name,req.body.price,req.body.introT,req.body.amount],); 
+        const [datas2] = await db.query(sql1,[req.body.name,req.body.price,req.body.intro,req.body.amount],); 
+        // const[directionDatas] = await db.query(sqlDirction[req.body.direction],);
         console.log(datas)
-        console.log(datas2)
-        console.log(req.body);
-        console.log(req.file);
-        res.json(req.body)
-        // res.send(`上傳檔案名稱為 ${req.file.filename}`)
+        // console.log(datas2)
+        //console.log(directionDatas)
+        // console.log(req.body);
+        // console.log(req.file);
+        // res.json(req.body)
+      //測試檢查用
+      //   if (req.files.length > 0) {
+      //     let message = `${req.body.username}您好!`;
+      //     req.files.forEach(function (file,index) {
+      //         message += `<div class="my-2">檔案(${file.originalname})上傳成功...<img src="${file.path}" height="40" /></div>`;
+      //     });        
+      //     res.render("msg-template.ejs", {  "message": message,  imgurl: ""  });
+      // }        
+      // else
+      //     //Client端未上傳檔案
+      //     res.render("msg-template.ejs", { message: "您未上傳任何檔案，請重新執行...", imgurl: "" });        
+  
     })
 
     // GET http://localhost:5000/B2B/B2B/id
@@ -99,7 +145,10 @@ const ext = {
         console.log('req.params.id', req.params.id)
         const id = req.params.id;
         const sql = "UPDATE exhibition_actadm SET id=?,aName=?,pic1=?,pic2=?,start=?,end=?,intro=?,fkCityId=?,fkMuseumId=?,fkKindId=? WHERE id=?";
+
         const sql1 ="UPDATE exhibition_ticket SET id=?,name=?,price=?,introT=?,amount=? WHERE id=?";
+
+        // const sql2 ="UPDATE exhibition_"
 
         const [datas] = await db.query(sql,[id,aName,req.files[0].filename,req.files[1].filename,start,end,intro,fkCityId,fkMuseumId,fkKindId,id],);
         const [datas2] = await db.query(sql1,[id,req.body.name,req.body.price,req.body.introT,req.body.amount,id],); 
