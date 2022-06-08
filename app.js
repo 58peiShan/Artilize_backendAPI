@@ -22,6 +22,7 @@ const ArticleCollectionRouter = require('./routes/Forum/ArticleCollection');
 const productRouter = require('./routes/Product/product');
 const B2BRouter = require('./routes/B2B/B2B');
 const NewsLetterRouter = require('./routes/newsLetter');
+const MapSearch = require('./routes/Exhibition/MapSearch')
 
 
 
@@ -51,6 +52,7 @@ app.use('/products', productsRouter);
 
 // 專題路由設定
 app.use('/users', usersRouter);
+app.use('/MapSearch', MapSearch)
 app.use('/exhibition', exhibitionRouter);
 app.use('/booking', bookingRouter);
 app.use('/users', usersRouter);

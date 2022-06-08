@@ -118,7 +118,12 @@ router.route("/addarticle").post(async (req, res, next) => {
 router.route("/:id").get(async (req, res, next) => {
   res.set('Access-Control-Allow-Origin', '*');
   const id = req.params.id;
-  const sql = `${forumSql} where article_id = (select min(article_id) from blog_article where article_id > ?) UNION select * from blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.userId where article_id = (select max(article_id) from blog_article where article_id < ?) union select * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn JOIN users ON blog_article.users_id = users.userId WHERE article_id =? ORDER BY ABS(article_id);`
+  const sql = `${forumSql} where article_id = (select min(article_id) from blog_article where article_id > ?) 
+  UNION select * from blog_article 
+  JOIN blog_category ON blog_article.category = blog_category.sn 
+  JOIN users ON blog_article.users_id = users.userId where article_id = (select max(article_id) from blog_article where article_id < ?) 
+  union select * FROM blog_article JOIN blog_category ON blog_article.category = blog_category.sn 
+  JOIN users ON blog_article.users_id = users.userId WHERE article_id =? ORDER BY ABS(article_id);`
   const datas = await db.query(sql, [id, id, id]);
   //console.log(datas[0]);
   res.json(datas[0]);
@@ -151,7 +156,7 @@ router.route("/:id").get(async (req, res, next) => {
 // 取留言
 router.route("/comments/:id").get(async (req, res, next) => {
   const id = req.params.id;
-  const sql = `SELECT blog_article.article_id, blog_comment_id, Blog_comment_content, DATE_FORMAT(COMMENT_time, "%Y-%m-%d %H:%i") AS COMMENT_time, userNickName, userAccount, userAvatar FROM blog_comment JOIN users ON blog_comment.user_id = users.userId JOIN blog_article ON blog_comment.article_id = blog_article.article_id where blog_article.article_id=? ORDER BY COMMENT_time DESC;`
+  const sql = `SELECT blog_article.article_id, blog_comment_id, Blog_comment_content, DATE_FORMAT(COMMENT_time, "%Y-%m-%d %H:%i") AS COMMENT_time, userNickName, userAccount, userAvatar, userId FROM blog_comment JOIN users ON blog_comment.user_id = users.userId JOIN blog_article ON blog_comment.article_id = blog_article.article_id where blog_article.article_id=? ORDER BY COMMENT_time DESC;`
   const datas = await db.query(sql, [id]);
   console.log(datas[0]);
   res.json(datas[0]);
