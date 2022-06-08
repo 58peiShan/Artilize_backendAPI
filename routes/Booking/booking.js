@@ -13,7 +13,7 @@ router.route('/')
         res.json(datas);
     })
     .post(upload.none(),async (req,res,next)=>{
-        const sql = "INSERT INTO cart_exhibition(cartExID,cartExTitle,cartExStart,cartExEnd,cartExImage,cartExBuyTime,cartExPrice,cartExCount,cartExCategory) VALUES ?";       
+        const sql = "INSERT INTO cart_exhibition(cartExID,cartExTitle,cartExStart,cartExEnd,cartExImage,cartExBuyTime,cartExPrice,cartExCount,cartExCategory,cartExMuseum) VALUES ?";       
         // const [datas] = await db.query(sql,[req.body.cartExID,req.body.cartExTitle,req.body.cartExStart,req.body.cartExEnd,req.body.cartExImage,req.body.cartExBuyTime,req.body.cartExPrice,req.body.cartExCount,req.body.cartExCategory]);
 
         console.log(req.body)
@@ -30,7 +30,8 @@ router.route('/')
                 temp[i].cartExBuyTime,
                 temp[i].cartExPrice,
                 temp[i].cartExCount,
-                temp[i].cartExCategory]
+                temp[i].cartExCategory,
+                temp[i].cartExMuseum]
                 )
         }
         const [datas] = await db.query(sql,[output]);        
