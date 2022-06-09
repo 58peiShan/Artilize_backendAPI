@@ -166,43 +166,49 @@ router.route("/comments/:id").get(async (req, res, next) => {
 //WebSocketThing
 const app1 = express()
 let httpServer = app1.listen(1337, function () {
-  console.log(`Server listening on port 1337...`); 
- });
+  console.log(`Server listening on port 1337...`);
+});
 
 let WebSocket = require("ws")
 let WebSocketServer = WebSocket.Server;
 let wss = new WebSocketServer({ server: httpServer });
 
 let n = 0;
-wss.on('connection', function (ws, req) {
- //connection事件：Emitted when the handshake is complete.
- 
- ws.id = (++n).toString().padStart(4, "0"); //配發ws一個id，例如"0001"    
-//  ws.id = router.route("/chatId").get(async (req, res, next) => {
-//   const id = req.body.userId;
-//   const sql = `select userAccount,userNickName from users WHERE userId = ?`
-//   const datas = await db.query(sql, [id]);
-//   console.log(datas);
-//   return(datas)
-//  })
- broadCast(`【${ws.id}】Connection 建立了...`);
+wss.on('connection', async function (ws, req) {
 
- ws.on('message', function (data) { //data is the message content.(type:Buffer)        
-     broadCast(`【${ws.id}】${data}...`);
- });
+  //connection事件：Emitted when the handshake is complete.
+  //ws.id = (++n).toString().padStart(4, "0"); //配發ws一個id，例如"0001"      
+  //  ws.id = router.route("/chatId").get(async (req, res, next) => {
+  //   const id = req.body.userId;
+  //   const sql = `select userAccount,userNickName from users WHERE userId = ?`
+  //   const datas = await db.query(sql, [id]);
+  //   console.log(datas);
+  //   return(datas)
+  //  })
 
- ws.on('close', function (code, reason) { //code {type：Number}； reason { type：Buffer }              
-     broadCast(`【${ws.id}】Connection 關閉了(狀態碼：${code} ${reason})...`);
-     //code：1000(Normal Closure) 1005(No Status Received)
- });
+  broadCast(`您已連線，請注意聊天禮儀，勿將重要資訊洩漏於他人`);
+
+  // ws.on("ClientToServerMsg", async (sendMessageRequest) => {
+  //   console.log("SOCKET.IO已接收到客戶端的訊息", sendMessageRequest);
+  // })
+
+  ws.on('message', function (data) {
+    broadCast(`${data}`);
+  });
+
+  ws.on('close', function (code, reason) { //code {type：Number}； reason { type：Buffer }              
+    broadCast(`已斷線`);
+    //code：1000(Normal Closure) 1005(No Status Received)
+  });
 });
 
-function broadCast(message){
- wss.clients.forEach(function(client){
-   if(client.readyState === WebSocket.OPEN){
-     client.send(message)
-   }
- })
+
+function broadCast(message) {
+  wss.clients.forEach(function (client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message)
+    }
+  })
 }
 
 
