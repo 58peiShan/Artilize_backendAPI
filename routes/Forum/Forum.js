@@ -177,14 +177,14 @@ let n = 0;
 wss.on('connection', function (ws, req) {
  //connection事件：Emitted when the handshake is complete.
  
- ///ws.id = (++n).toString().padStart(4, "0"); //配發ws一個id，例如"0001"    
- ws.id = router.route("/chatId").get(async (req, res, next) => {
-  const id = req.body.userId;
-  const sql = `select userAccount,userNickName from users WHERE userId = ?`
-  const datas = await db.query(sql, [id]);
-  console.log(datas);
-  return(datas)
- })
+ ws.id = (++n).toString().padStart(4, "0"); //配發ws一個id，例如"0001"    
+//  ws.id = router.route("/chatId").get(async (req, res, next) => {
+//   const id = req.body.userId;
+//   const sql = `select userAccount,userNickName from users WHERE userId = ?`
+//   const datas = await db.query(sql, [id]);
+//   console.log(datas);
+//   return(datas)
+//  })
  broadCast(`【${ws.id}】Connection 建立了...`);
 
  ws.on('message', function (data) { //data is the message content.(type:Buffer)        
