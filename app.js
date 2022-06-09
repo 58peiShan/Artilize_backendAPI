@@ -22,13 +22,9 @@ const ArticleCollectionRouter = require('./routes/Forum/ArticleCollection');
 const productRouter = require('./routes/Product/product');
 const B2BRouter = require('./routes/B2B/B2B');
 const NewsLetterRouter = require('./routes/newsLetter');
-const MapSearch = require('./routes/Exhibition/MapSearch')
-
-
-
+const MapSearch = require('./routes/Exhibition/MapSearch');
 
 const app = express();
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -63,11 +59,6 @@ app.use('/ArticleComment', ArticleCommentRouter);
 app.use('/ArticleCollection', ArticleCollectionRouter);
 app.use('/NewsLetter', NewsLetterRouter);
 app.use('/B2B', B2BRouter);
-
-
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -106,14 +97,42 @@ app.use(function (err, req, res, next) {
 //   })
 
 
+//WebSocketThing
+// let httpServer = app.listen(1337, function () {
+//    console.log(`Server listening on port 1337...`); 
+//   });
 
+// let WebSocket = require("ws")
+// let WebSocketServer = WebSocket.Server;
+// let wss = new WebSocketServer({ server: httpServer });
 
+// let n = 0;
+// wss.on('connection', function (ws, req) {
+//   //connection事件：Emitted when the handshake is complete.
+  
+//   ///ws.id = (++n).toString().padStart(4, "0"); //配發ws一個id，例如"0001"    
+//   ws.id = app.post(async (req, res, next) => {
+//     let id = req.body.userId
+//     res(id)
+//   })
+//   broadCast(`【${ws.id}】Connection 建立了...`);
 
+//   ws.on('message', function (data) { //data is the message content.(type:Buffer)        
+//       broadCast(`【${ws.id}】${data}...`);
+//   });
 
+//   ws.on('close', function (code, reason) { //code {type：Number}； reason { type：Buffer }              
+//       broadCast(`【${ws.id}】Connection 關閉了(狀態碼：${code} ${reason})...`);
+//       //code：1000(Normal Closure) 1005(No Status Received)
+//   });
+// });
 
-
-
-
-
+// function broadCast(message){
+//   wss.clients.forEach(function(client){
+//     if(client.readyState === WebSocket.OPEN){
+//       client.send(message)
+//     }
+//   })
+// }
 
 module.exports = app;
