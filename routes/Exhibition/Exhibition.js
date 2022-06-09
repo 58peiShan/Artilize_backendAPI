@@ -5,15 +5,7 @@ const multer = require('multer');
 const upload = multer()
 
 
-router.route('/categories/:id')
-  .get(async (req, res, next) =>{
-    const id = req.params.id;
-    const sql = `SELECT * FROM exhibition_actadm 
-    JOIN exhibition_kind 
-    ON exhibition_kind.kid = exhibition_actadm.fkKindId WHERE fkKindId=?`
-    const [datas] = await db.query(sql,[id]);
-    res.json(datas);
-  })
+
 router.route('/location')
   .get(async (req, res, next) =>{
     const id = req.params.id;

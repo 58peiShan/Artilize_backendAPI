@@ -6,6 +6,37 @@ const db = require('../../modules/mysql_config');
 
 const upload = multer()
 
+
+
+router.route('/coupon/user/:id')
+
+  .get(async(req, res, next)=> {
+    const id = req.params.id;
+    const sql = "SELECT * FROM cart_coupon WHERE fkUserId = ? ORDER BY fkUserId DESC;"
+    const [datas] = await db.query(sql,[id]);
+    res.json(datas);
+})
+  
+
+router.route('/coupon')
+
+  .get(async(req, res, next)=> {
+    const sql = "SELECT * FROM cart_coupon ORDER BY coupon_id DESC;"
+    const [datas] = await db.query(sql);
+    res.json(datas);
+})
+  .put(upload.none(), async(req,res,next)=>{
+    let output = {
+        ok:false
+    }
+    const sql = "UPDATE cart_coupon SET isUsed=? WHERE couponName = ?";
+    const [datas] = await db.query(sql,[req.body.isUsed,req.body.couponName]);
+    if(datas.affectedRows === 1){
+        output.ok = true;
+    }
+    res.json(output) ;
+})
+    
 router.route('/user/:id')
 
   .get(async(req, res, next)=> {
