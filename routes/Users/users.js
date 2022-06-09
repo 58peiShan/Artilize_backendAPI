@@ -66,6 +66,38 @@ router.post('/signup',upload.none(), async function (req, res, next) {
  
 });
 
+//Google登入
+router.post('/googlelogin',upload.none(),async(req,res,next)=>{
+  try {
+    let output ={
+      ok:false
+    }
+    console.log(req.body)
+    const{email,name,picture,sub} = req.body
+    const sql = "select Count(*) AS total from users WHERE userId=? and userEmail=?"
+    const [checkDatas] = await db.query(sql,[sub,email])
+    const sql2 = "select Count(*) AS totalEmail from users WHERE userEmail=?"
+    const [checkEmail] = await db.query(sql2,[email])
+    // console.log(checkEmail)
+    if(checkDatas[0].total>0){
+      output.ok=true
+      output.userId=sub
+      res.json(output)
+    }else if(checkEmail[0].totalEmail>0){
+      const sql3 = "UPDATE users SET userId=? WHERE userEmail=?"
+      const [changeId] = await db.query(sql3,[sub,email])
+      output.ok=true
+      output.userId=sub
+      res.json(output)
+    }
+    
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+
 //Account 驗證
 router.get('/signup/checkaccount',async function(req,res,next){
   let output = {
