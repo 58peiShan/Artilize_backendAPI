@@ -73,22 +73,42 @@ router.post('/googlelogin',upload.none(),async(req,res,next)=>{
       ok:false
     }
     console.log(req.body)
-    const{email,name,picture,sub} = req.body
+    const{email,account,picture,sub} = req.body
     const sql = "select Count(*) AS total from users WHERE userId=? and userEmail=?"
     const [checkDatas] = await db.query(sql,[sub,email])
     const sql2 = "select Count(*) AS totalEmail from users WHERE userEmail=?"
     const [checkEmail] = await db.query(sql2,[email])
+    const sql5 = "select userAvatar from users Where userId=?"
+    // console.log(Math.random().toString(36).slice(2) + 
+    // Math.random().toString(36)
+    //     .toUpperCase().slice(2))
     // console.log(checkEmail)
+    const password = Math.random().toString(36).slice(2) + 
+    Math.random().toString(36)
+        .toUpperCase().slice(2)
     if(checkDatas[0].total>0){
       output.ok=true
       output.userId=sub
+      const [avatar] = await db.query(sql5,[sub])
+      const{userAvatar} = avatar[0]
+      output.userAvatar=userAvatar
       res.json(output)
     }else if(checkEmail[0].totalEmail>0){
       const sql3 = "UPDATE users SET userId=? WHERE userEmail=?"
       const [changeId] = await db.query(sql3,[sub,email])
       output.ok=true
       output.userId=sub
+      output.userAvatar=userAvatar
       res.json(output)
+    }else{
+      const sql4="INSERT INTO users(userId,userAccount,userEmail,userAvatar,userPassword) VALUES(?,?,?,'user.png',?)"
+      const [insertDatas] = await db.query(sql4,[sub,account,email,password])
+      if(insertDatas.affectedRows===1){
+        output.ok=true
+        output.userId = sub
+        output.userAvatar='user.png'
+        res.json(output)
+      }
     }
     
   } catch (error) {
@@ -160,6 +180,7 @@ router.post('/login',upload.none(),async (req,res,next)=>{
       output.ok = true
       output.userId = datas[0].userId
       output.userAvatar = datas[0].userAvatar
+      output.userAccount = datas[0].userAccount
   
       console.log(output)
       res.json(output)
