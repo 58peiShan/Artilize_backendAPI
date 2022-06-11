@@ -116,6 +116,53 @@ router.post('/googlelogin',upload.none(),async(req,res,next)=>{
   }
 })
 
+//facebook 登入
+router.post('/facebooklogin',async(req,res,next)=>{
+  try {
+    let output ={
+      ok:false
+    }
+    // console.log(req.body)
+    const{email,picture,userId,account}=req.body
+    const sql = "select Count(*) AS total from users WHERE userId=? and userEmail=?"
+    const [checkDatas] = await db.query(sql,[userId,email])
+    const sql2 = "select Count(*) AS totalEmail from users WHERE userEmail=?"
+    const [checkEmail] = await db.query(sql2,[email])
+    const sql5 = "select userAvatar from users Where userId=?"
+    const password = Math.random().toString(36).slice(2) + 
+    Math.random().toString(36)
+        .toUpperCase().slice(2)
+    if(checkDatas[0].total>0){
+      output.ok=true
+      output.userId=userId
+      const [avatar] = await db.query(sql5,[userId])
+      const{userAvatar} = avatar[0]
+      output.userAvatar=userAvatar
+      res.json(output)
+    }else if(checkEmail[0].totalEmail>0){
+      const sql3 = "UPDATE users SET userId=? WHERE userEmail=?"
+      const [changeId] = await db.query(sql3,[userId,email])
+      output.ok=true
+      output.userId=userId
+      output.userAvatar=userAvatar
+      res.json(output)
+    }else{
+      const sql4="INSERT INTO users(userId,userAccount,userEmail,userAvatar,userPassword) VALUES(?,?,?,'user.png',?)"
+      const [insertDatas] = await db.query(sql4,[userId,account,email,password])
+      if(insertDatas.affectedRows===1){
+        output.ok=true
+        output.userId = userId
+        output.userAvatar='user.png'
+        res.json(output)
+      }
+    }
+    
+
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 
 
 //Account 驗證
