@@ -169,15 +169,16 @@ const io = require('socket.io')(1337,{
     origin:['http://localhost:3000'],
   }
 })
-
+let n = 0;
 io.on("connection",socket=>{
-  console.log(socket.id)
-  socket.on('send-message', (message, userId) =>{
-    socket.broadcast.emit('receive-message',  userId, message)
-    console.log(`${message},${userId}`);
+  const onlineCount = []
+  socket.id = (++n).toString().padStart(4, "0")
+  onlineCount.push(socket.id)
+  console.log(onlineCount.length)
+  socket.on('send-message', (message, userAccount) =>{
+    socket.broadcast.emit('receive-message',  userAccount, message)
+    console.log(`${message},${userAccount}`);
   })
-
-
 })
 
 
